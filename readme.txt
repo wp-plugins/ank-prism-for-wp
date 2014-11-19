@@ -17,7 +17,7 @@ This plugin lets you control and use this awesome library in to your WordPress s
 
 
 == Installation ==
-1. Download the .zip file from github and extract it.
+1. Search for 'ank prism for wp' in WordPress Plugin Directory and Download the .zip file & extract it.
 2. Upload the folder `ank-prism-for-wp` to the `/wp-content/plugins/` directory
 3. Activate the plugin through the 'Plugins List' page in WordPress Admin Area.
 4. Configure this plugin via Settings-->Ank Prism For WP
@@ -52,9 +52,9 @@ Just ahead to http://prismjs.com for demos and instructions.
 
 = Who is the original developer of Prism Library ? =
 
-This js library is developed by : [Lea Verou](http://lea.verou.me/)
-With the many other Contributors : [Listed here](https://github.com/LeaVerou/prism/contributors)
-Hosted at : [Prismjs.com](http://www.prismjs.com)
+* This js library is developed by : [Lea Verou](http://lea.verou.me/)
+* With the many other Contributors : [Listed here](https://github.com/LeaVerou/prism/contributors)
+* Hosted at : [Prismjs.com](http://www.prismjs.com)
 
 = Syntax highlighter not working in my browser :( =
 
@@ -80,11 +80,11 @@ No worry! It will remove its traces from database upon uninstall.
 
 Each time you save new settings , this plugin write processed js and css code to two separate files.
 There may be some chance that plugin unable to create/write these files. These files are essential to front end.
-Possible reason are ->
+* Possible reason are ->
 * Not enough permission to write a file.
 * Plugin malfunction (my fault).
 * You hosting provider has disabled File Handling Function via php.ini (rare).
-How to resolve ->
+* How to resolve ->
 * Login to your website via your FTP client software. (eg: FileZilla)
   and change file permission of this plugin folder.
 
@@ -115,7 +115,6 @@ Yes you can change the plugin code. But you can't make money by selling this. Yo
 No big changes yet in this plugin, i may add more languages or themes in future.
 
 == Screenshots ==
-
 1. Plugin Option Page Screen
 2. Tiny MCE Pop-up box
 
