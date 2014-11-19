@@ -8,7 +8,6 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors:ank91
 
 Prism syntax highlighter controller plugin for WordPress.
-Originally developed by - [Lea Verou](http://www.prismjs.com)
 
 == Description ==
 Prism is a lightweight, extensible syntax highlighter, built with modern web standards in mind.
