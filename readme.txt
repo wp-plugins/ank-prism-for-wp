@@ -2,7 +2,7 @@
 Tags: syntax highlighter, prism, light weight, simple, ank, free
 Requires at least: 3.8.0
 Tested up to: 4.0
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors:ank91
@@ -120,6 +120,11 @@ No big changes yet in this plugin, i may add more languages or themes in future.
 
 
 == Changelog ==
+
+= 1.4 =
+* Option to disable Tiny MCE button.
+* Option to load Prism files only to Post (Single) Pages.
+* Plugin Code optimization and cleanup
 
 = 1.3 =
 * Add assistant button to Tiny MCE (editor) that will lets user quickly insert code without any tutorial.

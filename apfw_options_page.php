@@ -62,6 +62,9 @@ if (!class_exists( 'Ank_Prism_For_WP_Option_Page' ) ) {
                  }else{
                      $options['plugin']=array();
                  }
+
+                 $options['onlyOnPost']=(isset($_POST['onlyOnPost']))?1:0;
+                 $options['noAssistant']=(isset($_POST['noAssistant']))?1:0;
                  //save back to database
                  update_option('ank_prism_for_wp',$options);
                  echo "<div class='updated'><p>Your settings has been <b>saved</b>.</p></div>";
@@ -91,9 +94,9 @@ div.wrap h2:first-child i:before{font-size: 64px; margin-right: 30px; vertical-a
 .hndle{ text-align:center;cursor: default!important; background: #fdfdfd; border-bottom-color:#DFDFDF!important; }
 </style>
 <div class="wrap">
-    <h2><i class="dashicons-before dashicons-arrow-up" style="color: #990484"> </i>Ank Prism For WP <i>(v<?php echo APFW_PLUGIN_VERSION ?>)</i></h2>
-    <form action="" method="post">
-   <?php wp_nonce_field('apfw_form','_wpnonce-apfw_form'); ?>
+<h2><i class="dashicons-before dashicons-arrow-up" style="color: #990484"> </i>Ank Prism For WP <i>(v<?php echo APFW_PLUGIN_VERSION ?>)</i></h2>
+<form action="" method="post">
+<?php wp_nonce_field('apfw_form','_wpnonce-apfw_form'); ?>
     <p style="text-align: center"><button class="button button-primary" type="submit" name="save_apfw_form" value="Save »"><i class="dashicons-before dashicons-upload"> </i>Save Settings </button></p>
     <div id="poststuff">
           <div class="postbox meta-col">
@@ -144,8 +147,11 @@ div.wrap h2:first-child i:before{font-size: 64px; margin-right: 30px; vertical-a
               </div>
           </div><!--end post box-->
       </div> <!--end post stuff-->
-    </form><!--end form-->
-    <hr>
+<hr><p>
+<input name="onlyOnPost" id="p_onlyOnPost" type="checkbox" <?php echo @($options['onlyOnPost'] ===1)? ' checked ':'' ?>><label for="p_onlyOnPost">Enqueue Prism files (CSS+JS) only to post pages</label>&ensp;
+<input name="noAssistant" id="p_noAssistant" type="checkbox" <?php echo @($options['noAssistant'] ===1)? ' checked ':'' ?>><label for="p_noAssistant">Don't show Assistant Button in editor</label>
+</p><hr>
+</form><!--end form-->
 Created with &hearts; by <a target="_blank" href="http://ank91.github.io/"> Ankur Kumar</a> |
 <a target="_blank" href="http://www.prismjs.com">&#9650; View Original Site for Demos and Instructions</a> |
 <a target="_blank" href="https://github.com/ank91/ank-prism-for-wp">Fork on GitHub</a>
@@ -195,9 +201,9 @@ Created with &hearts; by <a target="_blank" href="http://ank91.github.io/"> Anku
                     'title'		=> 'Overview',
                     'content'	=>'<p><strong>Thanks for using "Ank Prism For WP"</strong><br>'.
                         'This plugin allows you to control and use <i>Prism Syntax Highlighter</i> on your website. Just configure options below and '.
-                        'save your settings.Then use something like this in your posts.<br>'.
+                        'save your settings.Then use something like this in your posts.'.
                         '<code>&lt;pre&gt;&lt;code class="language-css"&gt;p { color: red }&lt;/code&gt;&lt;/pre&gt;</code>'.
-                        '</p>'
+                        '<br>You can also use in editor <i>Prism Assistant Button</i>.</p>'
 
                 )
             );
@@ -206,7 +212,7 @@ Created with &hearts; by <a target="_blank" href="http://ank91.github.io/"> Anku
                 array(
                     'id'		=> 'apfw-troubleshoot',
                     'title'		=> 'Troubleshoot',
-                    'content'	=>'<p><strong>Things to remember</strong><br>'.
+                    'content'	=>'<p><strong>Things to remember</strong>'.
                  '<ul>'.
                 '<li>If you are using a cache/performance plugin, you need to flush/delete your site cache after  saving settings here.</li>'.
                 '<li>Only selected languages are available at this time. Stay tuned for more.</li>'.

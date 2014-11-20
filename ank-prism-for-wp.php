@@ -3,8 +3,8 @@
 Plugin Name: Ank Prism For WP
 Plugin URI: http://ank91.github.io/ank-prism-for-wp/
 Description: Control Prism syntax highlighter in WordPress.
-Version: 1.3
-Author: ank91
+Version: 1.4
+Author: Ankur Kumar
 Author URI: http://ank91.github.io/
 License: GPL2
 */
@@ -33,7 +33,7 @@ if (!defined('ABSPATH')) exit;
 if (!class_exists( 'Ank_Prism_For_WP' ) ) {
 
     if (!defined('APFW_PLUGIN_VERSION')) {
-        define('APFW_PLUGIN_VERSION', '1.3');
+        define('APFW_PLUGIN_VERSION', '1.4');
     }
     if (!defined('APFW_PLUGIN_SLUG')) {
         define('APFW_PLUGIN_SLUG', 'apfw_plugin_settings');
@@ -111,15 +111,17 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
             $new_options=array(
                 'plugin_ver'=>APFW_PLUGIN_VERSION,
                 'theme'=>1,
-                'lang'=>array(),
-                'plugin'=>array(),
+                'lang'=>array(1,2,3),
+                'plugin'=>array(4),
+                'onlyOnPost'=>0,
+                'noAssistant'=>0,
             );
             add_option('ank_prism_for_wp', $new_options);
 
         }
 
         function apfw_theme_list()
-        {
+        {    //base url for demos
             $base_url='http://prismjs.com/index.html?theme=';
             $list=array(
                 1=>array('name'=>'Default','url'=>$base_url.'prism','file'=>'prism'),
@@ -133,7 +135,7 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
             return $list;
         }
         function apfw_plugin_list()
-        {   //$base_url, lets not repeat code  ,domains are subject to change
+        {   //$base_url, lets not repeat code ,since domains are subject to change
             $base_url='http://prismjs.com/plugins/';
             //JS and related CSS file name must be same, except extension
             $list=array(
@@ -165,7 +167,10 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
             return $list;
         }
 
-        function apfw_user_style(){
+        function apfw_user_style()
+        {
+            if($this->apfw_check_if_enqueue()==false)
+                return;
             //enqueue front end css
             if(!file_exists(__DIR__.'/prism-css.css')){
                 //try to create file
@@ -179,6 +184,8 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
         }
 
         function apfw_user_script(){
+            if($this->apfw_check_if_enqueue()==false)
+                return;
             //enqueue front end js
             if(!file_exists(__DIR__.'/prism-js.js')){
                 //try to create file
@@ -191,7 +198,13 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
             wp_enqueue_script('prism-script',plugins_url('prism-js.js',__FILE__),array(),$file_ver,true);
 
         }
-
+        function apfw_check_if_enqueue(){
+           $options=get_option('ank_prism_for_wp');
+           if(@$options['onlyOnPost']==1){
+                if(is_single()) {return true; }else return false;
+           }
+            return true;
+        }
         function apfw_decide_css(){
             $options=get_option('ank_prism_for_wp');
             $theme_list=$this->apfw_theme_list();
@@ -266,19 +279,10 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
         }
 
         public function apfw_add_editor_button() {
-            global $typenow;
-            // check user permissions
-            if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') ) {
-                return;
-            }
-            // verify the post type
-            if( ! in_array( $typenow, array( 'post', 'page' ) ) )
-                return;
-            // check if WYSIWYG is enabled
-            if ( get_user_option('rich_editing') == 'true') {
+            if ( $this->apfw_check_if_btn_can_be()==true) {
                 add_filter("mce_external_plugins", array($this,"afpw_add_tinymce_plugin"));
                 add_filter('mce_buttons', array($this,'afpw_register_tinymce_button'));
-            }
+             }
 
         }
         function afpw_register_tinymce_button($buttons) {
@@ -291,10 +295,8 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
         }
 
         function apfw_admin_inline_script($hook){
-            global $pagenow;
-            $lang_list=$this->apfw_lang_list();
-            //print the code only to post pages
-            if ($pagenow=='post-new.php' OR $pagenow=='post.php') {
+            if ( $this->apfw_check_if_btn_can_be()==true) {
+                $lang_list=$this->apfw_lang_list();
                 echo "<script type='text/javascript'> /* <![CDATA[ */";
                 echo 'var apfw_lang=[';
                 for($i=1;$i<=count($lang_list);$i++){
@@ -306,16 +308,31 @@ if (!class_exists( 'Ank_Prism_For_WP' ) ) {
         }
         }
         function apfw_admin_inline_style($hook){
-            global $pagenow;
-            //print the code only to post pages
-            if ($pagenow=='post-new.php' OR $pagenow=='post.php') {
-         ?>
-        <style type="text/css">
-            .mce-i-apfw-icon:before { font: 400 20px/1 dashicons; padding: 0; vertical-align: top; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; content: '\f499'; }
-        </style>
-        <?php
-        } }
-
+            if ( $this->apfw_check_if_btn_can_be()==true)
+            {
+            ?><style type="text/css"> .mce-i-apfw-icon:before {content: '\f499';font: 400 20px/1 dashicons; padding: 0; vertical-align: top; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;} </style>
+            <?php
+        }
+        }
+        function  apfw_check_if_btn_can_be(){
+            global $typenow;
+            // check user permissions
+            if ( !current_user_can('edit_posts') && !current_user_can('edit_pages') ) {
+                return false;
+            }
+            // verify the post type
+            if( ! in_array( $typenow, array( 'post', 'page' ) ) )
+                return false;
+            //check if user don't want the
+            $options=get_option('ank_prism_for_wp');
+            if(@$options['noAssistant']==1)
+                return false;
+            // check if WYSIWYG is enabled
+            if ( get_user_option('rich_editing') == 'true') {
+                 return true;
+            }
+             return false;
+        }
 
     }//end class
 }//end if class exists

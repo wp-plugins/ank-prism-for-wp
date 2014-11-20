@@ -3,8 +3,11 @@
     String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g, "");
     };
-    /*get language list from inline script */
-    var langs=apfw_lang;
+    /*get language list from inline script  */
+    var langs=[];
+    if(typeof apfw_lang !== undefined){
+         langs=apfw_lang;
+    }
     tinymce.PluginManager.add('afpw_assist_button', function( editor, url ) {
         editor.addButton( 'afpw_assist_button', {
             title: 'Prism Assistant',
@@ -43,7 +46,7 @@
                         {
                             type: 'textbox',
                             name: 'code',
-                            label: 'Code*:',
+                            label: 'Enter Code*:',
                             multiline: true,
                             minHeight: 250,
                             value: '',
