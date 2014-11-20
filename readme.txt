@@ -15,6 +15,28 @@ This plugin lets you control and use this awesome library in to your WordPress s
 
 > Plugin Site : http://ank91.github.io/ank-prism-for-wp/
 
+== Available Language at this time ==
+* HTML
+* CSS
+* C-Like
+* Java Script
+* PHP
+* SQL
+
+== 6 Official themes ==
+
+== 7 Official Plugins ==
+* AutoLinker
+* FileHighlight
+* Line Highlight
+* Line Numbers
+* Show Invisibles
+* Show Language
+* WebPlatform Docs
+
+== Additional Features ==
+* Tiny MCE (editor) Assistant Button to quick insert code to posts.
+* Load (enqueue) Prism files (css+js) to post pages only
 
 == Installation ==
 1. Search for 'ank prism for wp' in WordPress Plugin Directory and Download the .zip file & extract it.
@@ -102,6 +124,10 @@ I believe that it will work with older versions too.
 = Can i modify this plugin ? =
 
 Yes you can change the plugin code. But you can't make money by selling this. You can ask for donation.
+
+= Have u changed anything in Prism source file =
+
+Not yet, each and every file is in its original state.
 
 = Future Plans ? =
 
