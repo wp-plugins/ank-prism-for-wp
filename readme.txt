@@ -19,10 +19,10 @@ This plugin lets you control and use this awesome library in to your WordPress s
 
 = Available Languages at this time =
 * HTML
-* CSS
+* CSS + Extras
 * C-Like
 * Java Script
-* PHP
+* PHP + Extras
 * SQL
 
 
