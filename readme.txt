@@ -15,7 +15,9 @@ This plugin lets you control and use this awesome library in to your WordPress s
 
 > Plugin Site : http://ank91.github.io/ank-prism-for-wp/
 
-== Available Language at this time ==
+** Comes with 6 Official themes **
+
+= Available Languages at this time =
 * HTML
 * CSS
 * C-Like
@@ -23,9 +25,8 @@ This plugin lets you control and use this awesome library in to your WordPress s
 * PHP
 * SQL
 
-== 6 Official themes ==
 
-== 7 Official Plugins ==
+= Comes with 7 Official Plugins =
 * AutoLinker
 * FileHighlight
 * Line Highlight
@@ -34,7 +35,7 @@ This plugin lets you control and use this awesome library in to your WordPress s
 * Show Language
 * WebPlatform Docs
 
-== Additional Features ==
+= Additional Features =
 * Tiny MCE (editor) Assistant Button to quick insert code to posts.
 * Load (enqueue) Prism files (css+js) to post pages only
 
