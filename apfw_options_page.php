@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /*
  * Settings Page for "Ank Prism For WP" Plugin
  * Needs main class object also
@@ -239,7 +239,7 @@ Created with &hearts; by <a target="_blank" href="http://ank91.github.io/"> Anku
             $curr_screen->set_help_sidebar(
                 '<p><strong>Quick Links</strong></p>' .
                 '<p><a href="https://wordpress.org/ank-prism-for-wp/faq/" target="_blank">Plugin FAQ</a></p>' .
-                '<p><a href="http://ank91.github.io/ank-prism-for-wp/" target="_blank">Plugin Home</a></p>'
+                '<p><a href="https://github.com/ank91/ank-prism-for-wp" target="_blank">Plugin Home</a></p>'
             );
         }
 

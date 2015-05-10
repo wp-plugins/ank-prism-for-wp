@@ -1,7 +1,7 @@
 === Ank Prism For WP ===
 Tags: syntax highlighter, prism, light weight, simple, ank, free
 Requires at least: 3.8.0
-Tested up to: 4.0
+Tested up to: 4.2.2
 Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,16 +13,15 @@ Prism syntax highlighter controller plugin for WordPress.
 Prism is a lightweight, extensible syntax highlighter, built with modern web standards in mind.
 This plugin lets you control and use this awesome library in to your WordPress site.
 
-> Plugin Site : http://ank91.github.io/ank-prism-for-wp/
 
 ** Comes with 6 Official themes **
 
 = Available Languages at this time =
 * HTML
-* CSS + Extras
+* CSS
 * C-Like
 * Java Script
-* PHP + Extras
+* PHP
 * SQL
 
 
@@ -118,13 +117,9 @@ Ok, please add this code to your wp-config.php
 
 = Did you test it with old version of WordPress ? =
 
-No, tested with v4.0 (latest as of now) only. So i recommend you to upgrade to latest WordPress today.
+No, tested with v4.0+ (latest as of now) only. So i recommend you to upgrade to latest WordPress today.
 I believe that it will work with older versions too.
 
-
-= Can i modify this plugin ? =
-
-Yes you can change the plugin code. But you can't make money by selling this. You can ask for donation.
 
 = Have u changed anything in Prism source file =
 
@@ -134,6 +129,7 @@ Not yet, each and every file is in its original state.
 
 * I18n for Option Page.
 * More languages.
+* Multi-site support
 * More options.
 
 
