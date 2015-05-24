@@ -2,7 +2,7 @@
 Tags: syntax highlighter, prism, light weight, simple, ank, free
 Requires at least: 3.8.0
 Tested up to: 4.2.2
-Stable tag: 1.4
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors:ank91
@@ -143,6 +143,9 @@ No big changes yet in this plugin, i may add more languages or themes in future.
 
 
 == Changelog ==
+
+= 1.5 =
+* Updated modules from original site
 
 = 1.4 =
 * Option to disable Tiny MCE button.

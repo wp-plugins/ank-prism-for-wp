@@ -46,7 +46,7 @@
                         {
                             type: 'textbox',
                             name: 'code',
-                            label: 'Enter Code*:',
+                            label: 'Paste Code*:',
                             multiline: true,
                             minHeight: 250,
                             value: '',

@@ -12,6 +12,6 @@ if( !defined('ABSPATH') && !defined('WP_UNINSTALL_PLUGIN') )
 /*
  * remove the database entry created by this plugin
  */
-if(get_option( 'ank_prism_for_wp' )==true ) {
-    delete_option('ank_prism_for_wp');
-}
+
+delete_option('ank_prism_for_wp');
+
