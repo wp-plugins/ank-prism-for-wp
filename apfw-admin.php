@@ -6,9 +6,9 @@
 
 /* no direct access*/
 if (!defined('ABSPATH')) exit;
-
+//check for main class
 if (!class_exists('Ank_Prism_For_WP')) {
-    wp_die(__('This file can not be run alone. This file is the part of <b>Ank Prism For WP</b> plugin.'));
+    die('What ?');
 }
 
 
@@ -19,15 +19,18 @@ class Ank_Prism_For_WP_Admin
     function __construct()
     {
         /*save setting upon plugin activation*/
-        register_activation_hook(plugin_basename(APFW_BASE_FILE), array($this, 'apfw_init_settings'));
+        register_activation_hook(plugin_basename(APFW_BASE_FILE), array($this, 'add_default_settings'));
 
         /* Add settings link under admin settings */
-        add_action('admin_menu', array($this, 'apfw_settings_menu'));
+        add_action('admin_menu', array($this, 'add_settings_menu'));
         /* Add settings link to plugin list page */
-        add_filter('plugin_action_links_' . plugin_basename(APFW_BASE_FILE), array($this, 'apfw_plugin_actions_links'), 10, 2);
+        add_filter('plugin_action_links_' . plugin_basename(APFW_BASE_FILE), array($this, 'add_plugin_actions_links'), 10, 2);
+
+        /*for register setting*/
+        add_action('admin_init', array($this, 'register_plugin_settings'));
 
         //add a button to mce editor
-        //source: https://www.gavick.com/blog/wordpress-tinymce-custom-buttons/
+        //@source: https://www.gavick.com/blog/wordpress-tinymce-custom-buttons/
         add_action('admin_head', array($this, 'apfw_add_editor_button'));
         add_action('admin_print_scripts', array($this, 'apfw_admin_inline_script'), 10);
         add_action('admin_print_styles', array($this, 'apfw_admin_inline_style'), 99);
@@ -35,98 +38,100 @@ class Ank_Prism_For_WP_Admin
     }   //end constructor
 
 
-    function apfw_init_settings()
+    function add_default_settings()
     {
         /* if settings exists then return early */
         if (get_option(APFW_OPTION_NAME)) {
             return;
         }
-
         //default settings
-        $new_options = array(
+        add_option(APFW_OPTION_NAME, $this->get_default_options());
+
+    }
+
+    private function  get_default_options()
+    {
+        return array(
             'plugin_ver' => APFW_PLUGIN_VERSION,
-            'theme' => 1,
+            'theme' => 2,
             'lang' => array(1, 2, 3),
             'plugin' => array(4),
             'onlyOnPost' => 0,
             'noAssistant' => 0,
         );
-        add_option(APFW_OPTION_NAME, $new_options);
-
     }
 
-    function apfw_settings_menu()
+    /*Register our settings, using WP settings API*/
+    function register_plugin_settings()
+    {
+        register_setting(APFW_OPTION_NAME, APFW_OPTION_NAME, array($this, 'APFW_validate_options'));
+    }
+
+
+    function add_settings_menu()
     {
         $page_hook_suffix = add_submenu_page('options-general.php', '&#9650; Ank Prism For WP', 'Ank Prism For WP', 'manage_options', APFW_PLUGIN_SLUG, array($this, 'APFW_Option_Page'));
 
         /* add help drop down menu on option page  wp v3.3+ */
-        add_action("load-$page_hook_suffix", array($this, 'apfw_help_menu_tab'));
+        add_action("load-$page_hook_suffix", array($this, 'add_help_menu_tab'));
 
     }
 
-    private function apfw_settings_page_url()
-    {
-        return add_query_arg('page', APFW_PLUGIN_SLUG, 'options-general.php');
-    }
 
-
-    function apfw_plugin_actions_links($links)
+    function add_plugin_actions_links($links)
     {
 
         if (current_user_can('manage_options')) {
+            $url = add_query_arg('page', APFW_PLUGIN_SLUG, 'options-general.php');
             array_unshift(
                 $links,
-                sprintf('<a href="%s">%s</a>', esc_attr($this->apfw_settings_page_url()), __('Settings'))
+                sprintf('<a href="%s">%s</a>', esc_url($url), __('Settings'))
             );
         }
 
         return $links;
     }
 
+
+    function  APFW_validate_options($in)
+    {
+        $out = array();
+
+        $out['plugin_ver'] = APFW_PLUGIN_VERSION;
+
+        if (isset($in['theme'])) {
+            $out['theme'] = intval($in['theme']);
+        } else {
+            $out['theme'] = 1;
+        }
+        if (isset($in['lang'])) {
+            $out['lang'] = $in['lang'];
+        } else {
+            $out['lang'] = array();
+            add_settings_error(APFW_OPTION_NAME, 'apfw_lang', 'At-least one language must be selected to work');
+        }
+        if (isset($in['plugin'])) {
+            $out['plugin'] = $in['plugin'];
+        } else {
+            $out['plugin'] = array();
+        }
+
+        $out['onlyOnPost'] = (isset($in['onlyOnPost'])) ? 1 : 0;
+        $out['noAssistant'] = (isset($in['noAssistant'])) ? 1 : 0;
+
+        //delete js and css files, will be re-created on front end
+        $this->delete_a_file('prism-css.css');
+        $this->delete_a_file('prism-js.js');
+
+        return $out;
+    }
+
     function  APFW_Option_Page()
     {
-
-        $options = get_option('ank_prism_for_wp');
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.'));
+        }
         global $Ank_Prism_For_WP_Obj;
-
-        if (isset($_POST['save_apfw_form'])) {
-            /* WP inbuilt form security check */
-            check_admin_referer('apfw_form', '_wpnonce-apfw_form');
-
-            $options['plugin_ver'] = APFW_PLUGIN_VERSION;
-
-            if (isset($_POST['ptheme'])) {
-                $options['theme'] = intval($_POST['ptheme']);
-            } else {
-                $options['theme'] = 1;
-            }
-            if (isset($_POST['plang'])) {
-                $options['lang'] = $_POST['plang'];
-            } else {
-                $options['lang'] = array();
-            }
-            if (isset($_POST['pplugin'])) {
-                $options['plugin'] = $_POST['pplugin'];
-            } else {
-                $options['plugin'] = array();
-            }
-
-            $options['onlyOnPost'] = (isset($_POST['onlyOnPost'])) ? 1 : 0;
-            $options['noAssistant'] = (isset($_POST['noAssistant'])) ? 1 : 0;
-            //save back to database
-            update_option('ank_prism_for_wp', $options);
-
-            echo "<div class='updated notice is-dismissible'><p>Your settings has been <b>saved</b>.</p></div>";
-            //delete js and css files
-            $this->delete_file('prism-css.css');
-            $this->delete_file('prism-js.js');
-
-            /* Detect if cache is enabled and warn user to flush cache */
-            if (WP_CACHE) {
-                echo "<div class='notice-warning notice'>It seems that a caching/performance plugin is active on this site. Please manually <b>invalidate/flush</b> that plugin <b>cache</b> to reflect the settings you saved here.</div>";
-            }
-        }//end if isset post
-
         ?>
             <!--option page start-->
             <style type="text/css">
@@ -136,8 +141,11 @@ class Ank_Prism_For_WP_Admin
             </style>
             <div class="wrap">
                 <h2>Ank Prism For WP <small>(v<?php echo APFW_PLUGIN_VERSION ?>)</small></h2>
-                <form action="" method="post">
-                    <?php wp_nonce_field('apfw_form', '_wpnonce-apfw_form'); ?>
+                <form action="<?php echo admin_url('options.php') ?>" method="post" id="apfw_form">
+                    <?php
+                    settings_fields(APFW_OPTION_NAME);
+                    $options = get_option(APFW_OPTION_NAME);
+                    ?>
                     <p style="text-align: center">
                         <button class="button button-primary" type="submit" name="save_apfw_form" value="Save »"><i class="dashicons-before dashicons-upload"> </i>Save Settings </button>
                     </p>
@@ -146,11 +154,11 @@ class Ank_Prism_For_WP_Admin
                             <h3 class="hndle"><i class="dashicons-before dashicons-admin-appearance" style="color: #02af00"> </i><span>Select a Theme</span></h3>
                             <div class="inside">
                                 <?php
-                                $theme_list = $Ank_Prism_For_WP_Obj->apfw_theme_list();
+                                $theme_list = $Ank_Prism_For_WP_Obj->get_theme_list();
                                 for ($i = 1; $i <= count($theme_list); $i++) {
                                     echo '<input ';
                                     echo ($options['theme'] == $i) ? ' checked ' : '';
-                                    echo 'name="ptheme" value="' . $i . '" id="ptheme-' . $i . '" type="radio">';
+                                    echo 'name="'.APFW_OPTION_NAME.'[theme]" value="' . $i . '" id="ptheme-' . $i . '" type="radio">';
                                     echo '<label for="ptheme-' . $i . '">' . $theme_list[$i]['name'] . "</label>";
                                     echo '&emsp;<a target="_blank" href="' . $theme_list[$i]['url'] . '">Preview</a><br>';
                                 }
@@ -163,12 +171,12 @@ class Ank_Prism_For_WP_Admin
 
                             <div class="inside" id="plang-list">
                                 <?php
-                                $lang_list = $Ank_Prism_For_WP_Obj->apfw_lang_list();
+                                $lang_list = $Ank_Prism_For_WP_Obj->get_lang_list();
                                 for ($i = 1; $i <= count($lang_list); $i++) {
                                     echo '<input ';
                                     echo (in_array($i, $options['lang'])) ? ' checked ' : '';
                                     echo ($lang_list[$i]['require'] !== '') ? ' data-require="' . $lang_list[$i]['require'] . '" ' : '';
-                                    echo ' name="plang[]" value="' . $i . '" id="plang-' . $lang_list[$i]['id'] . '" type="checkbox">';
+                                    echo ' name="'.APFW_OPTION_NAME.'[lang][]" value="' . $i . '" id="plang-' . $lang_list[$i]['id'] . '" type="checkbox">';
                                     echo '<label for="plang-' . $lang_list[$i]['id'] . '">' . $lang_list[$i]['name'] . "</label>";
                                     echo ($lang_list[$i]['require'] !== '') ? '&emsp;<i>(Requires: ' . $lang_list[$i]['require'] . ')</i>' : '';
                                     echo '<br>';
@@ -182,11 +190,11 @@ class Ank_Prism_For_WP_Admin
 
                             <div class="inside">
                                 <?php
-                                $plugin_list = $Ank_Prism_For_WP_Obj->apfw_plugin_list();
+                                $plugin_list = $Ank_Prism_For_WP_Obj->get_plugin_list();
                                 for ($i = 1; $i <= count($plugin_list); $i++) {
                                     echo '<input ';
                                     echo (in_array($i, $options['plugin'])) ? ' checked ' : '';
-                                    echo ' name="pplugin[]" value="' . $i . '" id="pplugin-' . $i . '" type="checkbox">';
+                                    echo ' name="'.APFW_OPTION_NAME.'[plugin][]" value="' . $i . '" id="pplugin-' . $i . '" type="checkbox">';
                                     echo '<label for="pplugin-' . $i . '">' . $plugin_list[$i]['name'] . "</label>";
                                     echo '&emsp;<a target="_blank" href="' . $plugin_list[$i]['url'] . '">View Demo</a><br>';
                                 }
@@ -198,9 +206,9 @@ class Ank_Prism_For_WP_Admin
                     <!--end post stuff-->
                     <hr>
                     <p>
-                        <input name="onlyOnPost" id="p_onlyOnPost" type="checkbox" <?php echo @($options['onlyOnPost'] === 1) ? ' checked ' : '' ?>>
+                        <input name="<?php echo APFW_OPTION_NAME ?>[onlyOnPost]" id="p_onlyOnPost" type="checkbox" <?php checked($options['onlyOnPost'],1) ; ?>>
                         <label for="p_onlyOnPost">Enqueue Prism files (CSS+JS) only to post/single pages</label>&ensp;
-                        <input name="noAssistant" id="p_noAssistant" type="checkbox" <?php echo @($options['noAssistant'] === 1) ? ' checked ' : '' ?>>
+                        <input name="<?php echo APFW_OPTION_NAME ?>[noAssistant]" id="p_noAssistant" type="checkbox" <?php checked($options['noAssistant'],1); ?>>
                         <label for="p_noAssistant">Don't show Assistant Button in editor</label>
                     </p>
                     <hr>
@@ -244,7 +252,7 @@ class Ank_Prism_For_WP_Admin
         <?php
         }//end function apfw_option_page
 
-    private function delete_file($file)
+    private function delete_a_file($file)
     {
         $file = __DIR__ . '/' . $file;
         if (file_exists($file)) {
@@ -252,7 +260,7 @@ class Ank_Prism_For_WP_Admin
         }
     }
 
-    function apfw_help_menu_tab()
+    function add_help_menu_tab()
     {
             /*get current screen obj*/
             $curr_screen = get_current_screen();
@@ -330,7 +338,7 @@ class Ank_Prism_For_WP_Admin
     {
         if ($this->apfw_check_if_btn_can_be() == true) {
             global $Ank_Prism_For_WP_Obj;
-            $lang_list = $Ank_Prism_For_WP_Obj->apfw_lang_list();
+            $lang_list = $Ank_Prism_For_WP_Obj->get_lang_list();
             echo "<script type='text/javascript'> /* <![CDATA[ */";
             echo 'var apfw_lang=[';
             for ($i = 1; $i <= count($lang_list); $i++) {
@@ -346,14 +354,7 @@ class Ank_Prism_For_WP_Admin
     {
         if ($this->apfw_check_if_btn_can_be() == true) {
             ?>
-            <style type="text/css"> .mce-i-apfw-icon:before {
-                    content: '\f499';
-                    font: 400 20px/1 dashicons;
-                    padding: 0;
-                    vertical-align: top;
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                } </style>
+            <style type="text/css"> .mce-i-apfw-icon:before { content: '\f499'; font: 400 20px/1 dashicons; padding: 0; vertical-align: top; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; } </style>
         <?php
         }
     }
@@ -366,7 +367,7 @@ class Ank_Prism_For_WP_Admin
         }
 
         //check if user don't want the
-        $options = get_option('ank_prism_for_wp');
+        $options = get_option(APFW_OPTION_NAME);
         if ($options['noAssistant'] == 1)
             return false;
         // check if WYSIWYG is enabled

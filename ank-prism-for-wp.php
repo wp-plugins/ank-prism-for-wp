@@ -3,7 +3,7 @@
 Plugin Name: Ank Prism For WP
 Plugin URI: http://ank91.github.io/ank-prism-for-wp/
 Description: Control and Use the Prism syntax highlighter in your WordPress site.
-Version: 1.6
+Version: 1.6.1
 Author: Ankur Kumar
 Author URI: http://ank91.github.io/
 License: GPL2
@@ -14,7 +14,7 @@ License: GPL2
 if (!defined('ABSPATH')) exit;
 
 
-define('APFW_PLUGIN_VERSION', '1.6');
+define('APFW_PLUGIN_VERSION', '1.6.1');
 define('APFW_BASE_FILE', __FILE__);
 define('APFW_PLUGIN_SLUG', 'apfw_plugin_settings');
 define('APFW_OPTION_NAME', 'ank_prism_for_wp');
@@ -34,10 +34,8 @@ class Ank_Prism_For_WP
         $this->put_db_options();
 
         //enqueue scripts and styles
-        if ($this->apfw_check_if_enqueue()) {
-            add_action('wp_enqueue_scripts', array($this, 'apfw_user_style'), 99);
-            add_action('wp_enqueue_scripts', array($this, 'apfw_user_script'), 99);
-        }
+        add_action('wp_enqueue_scripts', array($this, 'apfw_user_style'), 99);
+        add_action('wp_enqueue_scripts', array($this, 'apfw_user_script'), 99);
 
     }
 
@@ -48,7 +46,7 @@ class Ank_Prism_For_WP
     }
 
 
-    function apfw_theme_list()
+    function get_theme_list()
     {    //base url for demos
         $base_url = 'http://prismjs.com/index.html?theme=';
         $list = array(
@@ -63,7 +61,7 @@ class Ank_Prism_For_WP
         return $list;
     }
 
-    function apfw_plugin_list()
+    function get_plugin_list()
     {   //$base_url, lets not repeat code ,since domains are subject to change
         $base_url = 'http://prismjs.com/plugins/';
         //JS and related CSS file name must be same, except extension
@@ -79,7 +77,7 @@ class Ank_Prism_For_WP
         return $list;
     }
 
-    function apfw_lang_list()
+    function get_lang_list()
     {
         //lets keep order and requirement
         //require is the id  of some other lang
@@ -112,10 +110,11 @@ class Ank_Prism_For_WP
 
     function apfw_user_style()
     {
+        if ($this->check_if_enqueue() == false) return;
         //enqueue front end css
         if (!file_exists(__DIR__ . '/prism-css.css')) {
             //try to create file
-            $this->apfw_write_a_file($this->apfw_decide_css(), 'prism-css.css');
+            $this->write_a_file($this->apfw_decide_css(), 'prism-css.css');
         }
 
         /* unique file version, every time the file get modified */
@@ -126,10 +125,11 @@ class Ank_Prism_For_WP
 
     function apfw_user_script()
     {
+        if ($this->check_if_enqueue() == false) return;
         //enqueue front end js
         if (!file_exists(__DIR__ . '/prism-js.js')) {
             //try to create file
-            $this->apfw_write_a_file($this->apfw_decide_js(), 'prism-js.js');
+            $this->write_a_file($this->apfw_decide_js(), 'prism-js.js');
         }
 
         /* unique file version, every time the file get modified */
@@ -139,22 +139,24 @@ class Ank_Prism_For_WP
 
     }
 
-    private function apfw_check_if_enqueue()
+    private function check_if_enqueue()
     {
         $options = $this->apfw_options;
         if ($options['onlyOnPost'] == 1) {
             if (is_single()) {
                 return true;
-            } else return false;
+            } else {
+                return false;
+            }
         }
         return true;
     }
 
-    function apfw_decide_css()
+    private function apfw_decide_css()
     {
         $options = $this->apfw_options;
-        $theme_list = $this->apfw_theme_list();
-        $plugin_list = $this->apfw_plugin_list();
+        $theme_list = $this->get_theme_list();
+        $plugin_list = $this->get_plugin_list();
 
         $style = file_get_contents(__DIR__ . '/themes/' . $theme_list[intval($options['theme'])]['file'] . '.css');
 
@@ -167,7 +169,7 @@ class Ank_Prism_For_WP
         }
         //minify css before saving to file
         if (APFW_MINIFY_CSS == true) {
-            return $this->apfw_minify_css($style);
+            return $this->minify_css($style);
         } else {
             return $style;
         }
@@ -176,11 +178,11 @@ class Ank_Prism_For_WP
     }
 
 
-    function apfw_decide_js()
+    private function apfw_decide_js()
     {
         $options = $this->apfw_options;
-        $lang_list = $this->apfw_lang_list();
-        $plugin_list = $this->apfw_plugin_list();
+        $lang_list = $this->get_lang_list();
+        $plugin_list = $this->get_plugin_list();
         //always include core js file
         $script = file_get_contents(__DIR__ . '/prism-core.min.js');
         //include selected langs  js
@@ -198,7 +200,7 @@ class Ank_Prism_For_WP
 
     }
 
-    function apfw_write_a_file($data, $file_name)
+    private function write_a_file($data, $file_name)
     {
         $file_name = __DIR__ . '/' . $file_name;
         $handle = fopen($file_name, 'w');
@@ -206,19 +208,16 @@ class Ank_Prism_For_WP
             if (!fwrite($handle, $data)) {
                 //could not write file
                 @fclose($handle);
-                return false;
+
             } else {
                 //success
                 @fclose($handle);
-                return true;
+
             }
-        } else {
-            //could not open handle
-            return false;
         }
     }
 
-    private function apfw_minify_css($buffer)
+    private function minify_css($buffer)
     {
         /* remove comments */
         $buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
@@ -239,7 +238,7 @@ class Ank_Prism_For_WP
 global $Ank_Prism_For_WP_Obj;
 $Ank_Prism_For_WP_Obj = new Ank_Prism_For_WP();
 
-if (is_admin()) {
+if (is_admin() && (!defined('DOING_AJAX') || !DOING_AJAX)) {
 
     require(trailingslashit(dirname(__FILE__)) . "apfw-admin.php");
 

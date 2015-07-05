@@ -2,7 +2,7 @@
 Tags: syntax highlighter, prism, light weight, simple, ank, free
 Requires at least: 3.8.0
 Tested up to: 4.2.2
-Stable tag: 1.6
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors:ank91
@@ -127,8 +127,7 @@ Ok, please add this code to your wp-config.php
 No, tested with v4.0+ (latest as of now) only. So i recommend you to upgrade to latest WordPress today.
 
 
-
-= Have u changed anything in Prism source file =
+= Have u changed anything in Prism source files =
 
 Not yet, each and every file is in its original state.
 
@@ -136,7 +135,6 @@ Not yet, each and every file is in its original state.
 
 * I18n for Option Page.
 * More languages.
-* Multi-site support
 * More options.
 
 
@@ -147,9 +145,13 @@ No big changes yet in this plugin, i may add more languages or themes in future.
 == Screenshots ==
 1. Plugin Option Page Screen
 2. Tiny MCE Pop-up box
-
+3. Final output on front-end
 
 == Changelog ==
+
+= 1.6.1 =
+* Minor bug fixes
+* Improved form handling
 
 = 1.6 =
 * Security and speed improvements
