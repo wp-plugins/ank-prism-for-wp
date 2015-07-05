@@ -2,7 +2,7 @@
 Tags: syntax highlighter, prism, light weight, simple, ank, free
 Requires at least: 3.8.0
 Tested up to: 4.2.2
-Stable tag: 1.5
+Stable tag: 1.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Contributors:ank91
@@ -39,6 +39,7 @@ This plugin lets you control and use this awesome library in to your WordPress s
 * Load (enqueue) Prism files (css+js) to post pages only
 
 == Installation ==
+0. Remove existing syntax highlighter or disable them.
 1. Search for 'ank prism for wp' in WordPress Plugin Directory and Download the .zip file & extract it.
 2. Upload the folder `ank-prism-for-wp` to the `/wp-content/plugins/` directory
 3. Activate the plugin through the 'Plugins List' page in WordPress Admin Area.
@@ -58,6 +59,7 @@ This is my small contribution to the Open Source Community.
 I have downloaded and tried 3 most downloaded plugins for Prism. One of them force you to use short-code.
 One of theme says that files will be loaded whenever required. One of them force you to use custom fields.
 None of them tried to give same interface like Prismjs.com. My plugin have tried to give same interface like Prismjs.com.
+
 So basically this plugin is just a just a controller. That will allow to select from available languages, theme, plugins.
 Then pack CSS and JS files. Lastly enqueue them to front end. It does not force you to use short-code at all.
 Just follow the instruction from Prismjs.com and you are ready to go.
@@ -86,6 +88,7 @@ You must have a modern browser to see syntax highlighter working.
 = Changes does not reflect after saving settings ? =
 
 Are you using some Cache/Performance plugin (eg:WP Super Cache/W3 Total Cache/BWP Minify) ?
+
 Then flush your WP cache and refresh target page.
 
 = Where does it store settings and options ? =
@@ -98,15 +101,19 @@ Uses a Single Row, stored in array for faster access.
 No worry! It will remove its traces from database upon uninstall.
 
 
-= Error: JS file could be created in plugin folder. =
+= This Plugin is unable to write js/css files . =
 
 Each time you save new settings , this plugin write processed js and css code to two separate files.
 There may be some chance that plugin unable to create/write these files. These files are essential to front end.
-* Possible reason are ->
+
+Possible reason are ->
+
 * Not enough permission to write a file.
 * Plugin malfunction (my fault).
 * You hosting provider has disabled File Handling Function via php.ini (rare).
-* How to resolve ->
+
+How to resolve ->
+
 * Login to your website via your FTP client software. (eg: FileZilla)
   and change file permission of this plugin folder.
 
@@ -118,7 +125,7 @@ Ok, please add this code to your wp-config.php
 = Did you test it with old version of WordPress ? =
 
 No, tested with v4.0+ (latest as of now) only. So i recommend you to upgrade to latest WordPress today.
-I believe that it will work with older versions too.
+
 
 
 = Have u changed anything in Prism source file =
@@ -143,6 +150,10 @@ No big changes yet in this plugin, i may add more languages or themes in future.
 
 
 == Changelog ==
+
+= 1.6 =
+* Security and speed improvements
+* Assistant Button is available for Custom Post types as well
 
 = 1.5 =
 * Updated modules from original site
